@@ -152,27 +152,38 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-2022-11-20-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-hexo-搭建博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2022/11/20/2022-11-20-hello-world/">2022-11-20-hello world</a>
+      <a class="article-title" href="/2022/11/22/hexo-%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">hexo-搭建博客</a>
     </h1>
   
 
         
-        <a href="/2022/11/20/2022-11-20-hello-world/" class="archive-article-date">
-  	<time datetime="2022-11-20T15:16:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-11-20</time>
+        <a href="/2022/11/22/hexo-%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="archive-article-date">
+  	<time datetime="2022-11-22T15:16:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-11-22</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <ol>
+<li>参考视频（<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Yb411a7ty/%EF%BC%89[%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2%E5%88%B0%E4%BA%92%E8%81%94%E7%BD%91_%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9_bilibili](https://www.bilibili.com/video/BV1mU4y1j72n/)">https://www.bilibili.com/video/BV1Yb411a7ty/）[发布博客到互联网_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1mU4y1j72n/)</a></li>
+<li>查看端口号，kill掉对应线程(参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/mingketao/article/details/119301377">杀端口号命令｜kill port_dupha的博客-CSDN博客_杀端口</a>)</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 查看端口号</span><br><span class="line">Win:  1. netstat -ano | findstr [端口号]  2. tasklist | findstr [PID]</span><br><span class="line">Mac： 1. sudo lsof -i tcp: [端口号]  2. sudo kill -9 [PID] </span><br><span class="line">// mac kill 线程</span><br><span class="line"># 1、sudo lsof -i tcp: [端口号]</span><br><span class="line">如： sudo lsof -i tcp:8080             (注：sudo 是切换管理员)</span><br><span class="line"># 2、sudo kill -9 [PID] </span><br><span class="line">如： sudo kill -9 1127                 (注：需看清要击杀的PID)</span><br><span class="line">// win kill</span><br><span class="line">taskkill /pid 55612 /f</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>yilia主题（<a target="_blank" rel="noopener" href="https://github.com/litten/hexo-theme-yilia">litten&#x2F;hexo-theme-yilia: 一个简洁优雅的hexo主题 A simple and elegant theme for hexo. (github.com)</a>）</li>
+<li>使用token解决Github报错：Support for password authentication was removed on August 13, 2021. Please use a personal access token instead（<a target="_blank" rel="noopener" href="http://www.imcoder.fun/content/1653217709201">解决Github报错：Support for password authentication was removed on August 13, 2021. Please use a personal access token instead - coder的自我修养 (imcoder.fun)</a>）</li>
+<li></li>
+</ol>
+
       
 
       
@@ -184,7 +195,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2022/11/20/2022-11-20-hello-world/">展开全文 >></a>
+          <a class="article-more-a" href="/2022/11/22/hexo-%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">展开全文 >></a>
         </p>
       
 
