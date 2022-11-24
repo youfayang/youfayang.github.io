@@ -16,7 +16,7 @@
 <meta property="og:description" content="今天分析客户问题，结合后台日志，发现在事务A里面，新建一个事务B，在事务B保存了数据以后，在事务A里面查询事务B刚保存的数据发现查不到。经分析是客户环境数据库的事务隔离级别设置了可重复读。修改为读已提交以后，问题解决。 12345678try(new TXA)&amp;#123;	try(new TXB)&amp;#123;        &#x2F;&#x2F;新建事务B，保存数据fid&#x3D;1		DB.save(fid&#x3D;1);	&amp;">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-11-24T14:54:35.000Z">
-<meta property="article:modified_time" content="2022-11-24T15:36:05.828Z">
+<meta property="article:modified_time" content="2022-11-24T15:47:31.075Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -237,6 +237,9 @@
 <td>×</td>
 </tr>
 </tbody></table>
+<p>参考文档：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zxd1435513775/article/details/83416053">数据库事务的四种隔离级别_止步前行的博客-CSDN博客_事务隔离级别</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/mameng1988/article/details/120842987">如何查看、设置mysql的事务隔离级别_mameng1998的博客-CSDN博客_mysql查看事务隔离级别</a></p>
 </li>
 </ol>
 
