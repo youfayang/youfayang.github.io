@@ -152,6 +152,133 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-数据库-事务隔离级别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/11/24/%E6%95%B0%E6%8D%AE%E5%BA%93-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/">数据库-事务隔离级别</a>
+    </h1>
+  
+
+        
+        <a href="/2022/11/24/%E6%95%B0%E6%8D%AE%E5%BA%93-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" class="archive-article-date">
+  	<time datetime="2022-11-24T14:54:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-11-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol start="0">
+<li><p>今天分析客户问题，结合后台日志，发现在事务A里面，新建一个事务B，在事务B保存了数据以后，在事务A里面查询事务B刚保存的数据发现查不到。经分析是客户环境数据库的事务隔离级别设置了可重复读。修改为读已提交以后，问题解决。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(<span class="keyword">new</span> <span class="title class_">TXA</span>)&#123;</span><br><span class="line">	<span class="keyword">try</span>(<span class="keyword">new</span> <span class="title class_">TXB</span>)&#123;</span><br><span class="line">        <span class="comment">//新建事务B，保存数据fid=1</span></span><br><span class="line">		DB.save(fid=<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//在事务A查询fid=1的数据，查不到</span></span><br><span class="line">	DB.query(fid=<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ol>
+<li><p>读未提交（READ UNCOMMITTED）</p>
+<p>当前事务A可以读到其它事务B未提交的数据。当事务B回滚以后，事务A可能读到大量变化的数据</p>
+</li>
+<li><p>读已提交（READ COMMITTED）</p>
+<p>在事务A里面可以看到其它事务提交的数据</p>
+</li>
+<li><p>可重复读（REPEATABLE READ） 默认</p>
+<p>正在执行的事务的数据变化对外不可见，也看不到别的事务产生的数据变化</p>
+</li>
+<li><p>序列化（SERIALIZABLE）</p>
+<p>强制所有事务串行执行</p>
+</li>
+</ol>
+</li>
+<li><h4 id="查看隔离级别"><a href="#查看隔离级别" class="headerlink" title="查看隔离级别"></a>查看隔离级别</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">查看系统隔离级别：select @@global.tx_isolation;</span><br><span class="line">查看会话隔离级别(5.0以上版本)：select @@tx_isolation;</span><br><span class="line">查看会话隔离级别(8.0以上版本)：select @@transaction_isolation;</span><br><span class="line">set session transaction isolation level repeatable read; 设置会话隔离级别为可重复读</span><br><span class="line">set session transaction isolation level read uncommitted; 设置会话隔离级别为读未提交</span><br><span class="line">set session transaction isolation level read committed; 设置会话隔离级别为读已提交</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><h4 id="脏读-x2F-不可重复读-x2F-幻读"><a href="#脏读-x2F-不可重复读-x2F-幻读" class="headerlink" title="脏读&#x2F;不可重复读&#x2F;幻读"></a>脏读&#x2F;不可重复读&#x2F;幻读</h4><p><strong>脏读</strong>：读到了别的事务还没提交的数据</p>
+<p><strong>不可重复读</strong>：一个事务范围内，读到了两次不同的数据</p>
+<p><strong>幻读</strong>：不可重复读的一种特殊场景，一个事务内，多次查询增加或减少了行数据</p>
+<p>要想解决这些问题，需要提高事务隔离级别。事务隔离级别越高，并发能力就越低</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>读已提交</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>可重复读</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>可串行化</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/11/24/%E6%95%B0%E6%8D%AE%E5%BA%93-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hexo-搭建博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
