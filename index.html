@@ -172,13 +172,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <ol start="0">
-<li><p>今天分析客户问题，结合后台日志，发现在事务A里面，新建一个事务B，在事务B保存了数据以后，在事务A里面查询事务B刚保存的数据发现查不到。经分析是客户环境数据库的事务隔离级别设置了可重复读。修改为读已提交以后，问题解决。</p>
+        <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>今天分析客户问题，结合后台日志，发现在事务A里面，新建一个事务B，在事务B保存了数据以后，在事务A里面查询事务B刚保存的数据发现查不到。经分析是客户环境数据库的事务隔离级别设置了可重复读。修改为读已提交以后，问题解决。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(<span class="keyword">new</span> <span class="title class_">TXA</span>)&#123;</span><br><span class="line">	<span class="keyword">try</span>(<span class="keyword">new</span> <span class="title class_">TXB</span>)&#123;</span><br><span class="line">        <span class="comment">//新建事务B，保存数据fid=1</span></span><br><span class="line">		DB.save(fid=<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//在事务A查询fid=1的数据，查不到</span></span><br><span class="line">	DB.query(fid=<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-</li>
-<li><h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ol>
+
+<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><ol>
 <li><p>读未提交（READ UNCOMMITTED）</p>
 <p>当前事务A可以读到其它事务B未提交的数据。当事务B回滚以后，事务A可能读到大量变化的数据</p>
 </li>
@@ -192,12 +191,9 @@
 <p>强制所有事务串行执行</p>
 </li>
 </ol>
-</li>
-<li><h4 id="查看隔离级别"><a href="#查看隔离级别" class="headerlink" title="查看隔离级别"></a>查看隔离级别</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">查看系统隔离级别：select @@global.tx_isolation;</span><br><span class="line">查看会话隔离级别(5.0以上版本)：select @@tx_isolation;</span><br><span class="line">查看会话隔离级别(8.0以上版本)：select @@transaction_isolation;</span><br><span class="line">set session transaction isolation level repeatable read; 设置会话隔离级别为可重复读</span><br><span class="line">set session transaction isolation level read uncommitted; 设置会话隔离级别为读未提交</span><br><span class="line">set session transaction isolation level read committed; 设置会话隔离级别为读已提交</span><br></pre></td></tr></table></figure>
+<h4 id="查看隔离级别"><a href="#查看隔离级别" class="headerlink" title="查看隔离级别"></a>查看隔离级别</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">查看系统隔离级别：select @@global.tx_isolation;</span><br><span class="line">查看会话隔离级别(5.0以上版本)：select @@tx_isolation;</span><br><span class="line">查看会话隔离级别(8.0以上版本)：select @@transaction_isolation;</span><br><span class="line">set session transaction isolation level repeatable read; 设置会话隔离级别为可重复读</span><br><span class="line">set session transaction isolation level read uncommitted; 设置会话隔离级别为读未提交</span><br><span class="line">set session transaction isolation level read committed; 设置会话隔离级别为读已提交</span><br></pre></td></tr></table></figure>
 
-
-</li>
-<li><h4 id="脏读-x2F-不可重复读-x2F-幻读"><a href="#脏读-x2F-不可重复读-x2F-幻读" class="headerlink" title="脏读&#x2F;不可重复读&#x2F;幻读"></a>脏读&#x2F;不可重复读&#x2F;幻读</h4><p><strong>脏读</strong>：读到了别的事务还没提交的数据</p>
+<h4 id="脏读-x2F-不可重复读-x2F-幻读"><a href="#脏读-x2F-不可重复读-x2F-幻读" class="headerlink" title="脏读&#x2F;不可重复读&#x2F;幻读"></a>脏读&#x2F;不可重复读&#x2F;幻读</h4><p><strong>脏读</strong>：读到了别的事务还没提交的数据</p>
 <p><strong>不可重复读</strong>：一个事务范围内，读到了两次不同的数据</p>
 <p><strong>幻读</strong>：不可重复读的一种特殊场景，一个事务内，多次查询增加或减少了行数据</p>
 <p>要想解决这些问题，需要提高事务隔离级别。事务隔离级别越高，并发能力就越低</p>
@@ -235,11 +231,10 @@
 <td>×</td>
 </tr>
 </tbody></table>
+<p>注：如开始的背景所说，可重复读可能是一种快照读，所以两次读取的结果是一样的。这里说的可重复读允许幻读，应该是不同事务读取到不同的结果。参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Winters____/article/details/108407958">关于可重复读和幻读_Winters____的博客-CSDN博客_可重复读幻读</a></p>
 <p>参考文档：</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zxd1435513775/article/details/83416053">数据库事务的四种隔离级别_止步前行的博客-CSDN博客_事务隔离级别</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/mameng1988/article/details/120842987">如何查看、设置mysql的事务隔离级别_mameng1998的博客-CSDN博客_mysql查看事务隔离级别</a></p>
-</li>
-</ol>
 
       
 
